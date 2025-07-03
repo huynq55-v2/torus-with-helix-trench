@@ -83,15 +83,16 @@ module hollow_torus() {
 //        MODULE: HELIX GROOVE SOLID (λ = ±1)
 // =================================================================
 module helix_solid(lambda = 1) {
-    union() {
-        for (i = [0 : m_helices - 1]) {
-            total_segs = n_winds * segments_per_turn;
-            for (j = [0 : total_segs - 1]) {
-                t1 = j     * 360 / segments_per_turn;
-                t2 = (j+1) * 360 / segments_per_turn;
-                p1 = helix_point(t1, i, lambda);
-                p2 = helix_point(t2, i, lambda);
-                segment_between(p1, p2, r_helix_tube);
+    for (i = [0 : m_helices - 1]) {
+        total_segs = n_winds * segments_per_turn;
+        for (j = [0 : total_segs - 1]) {
+            t1 = j     * 360 / segments_per_turn;
+            t2 = (j+1) * 360 / segments_per_turn;
+            p1 = helix_point(t1, i, lambda);
+            p2 = helix_point(t2, i, lambda);
+            hull() {
+                translate(p1) sphere(r = r_helix_tube, $fn=16);
+                translate(p2) sphere(r = r_helix_tube, $fn=16);
             }
         }
     }
@@ -102,6 +103,7 @@ module helix_solid(lambda = 1) {
 // =================================================================
 difference() {
     hollow_torus();  // hollow torus (20% wall thickness)
+    color("red", alpha = 0.5)
     union() {
         helix_solid(+1);  // Right-handed helix
         helix_solid(-1);  // Left-handed helix
